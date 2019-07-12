@@ -25,6 +25,7 @@ class BeliefNode(object):
         self.depth = -1
         self.action_map = None
         self.state_particles = []   # The set of states that comprise the belief distribution of this belief node
+        self.visited = False
 
         if parent_entry is not None:
             self.parent_entry = parent_entry
