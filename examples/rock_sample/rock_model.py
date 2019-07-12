@@ -262,7 +262,11 @@ class RockModel(Model):
 
     def reset_for_epoch(self):
         self.actual_rock_states = self.sample_rocks()
-        console(2, module, "Actual rock states = " + str(self.actual_rock_states))
+        print("reset rock states")
+        # console(2, module, "Actual rock states = " + str(self.actual_rock_states))
+
+    def set_rock_states(self, state):
+        self.actual_rock_states = state.rock_states
 
     def update(self, step_result):
         if step_result.action.bin_number == ActionType.SAMPLE:
@@ -383,7 +387,7 @@ class RockModel(Model):
         if action.rock_no in self.unique_rocks_sampled:
             return RockObservation(False, False)
 
-        observation = self.actual_rock_states[action.rock_no]
+        observation = next_state.rock_states[action.rock_no]
 
         # if checking a rock...
         dist = next_state.position.euclidean_distance(self.rock_positions[action.rock_no])
@@ -399,11 +403,11 @@ class RockModel(Model):
             observation = not observation
 
         # If I now believe that a rock, previously bad, is now good, change that here
-        if observation and not next_state.rock_states[action.rock_no]:
-            next_state.rock_states[action.rock_no] = True
-        # Likewise, if I now believe a rock, previously good, is now bad, change that here
-        elif not observation and next_state.rock_states[action.rock_no]:
-            next_state.rock_states[action.rock_no] = False
+        # if observation and not next_state.rock_states[action.rock_no]:
+        #     next_state.rock_states[action.rock_no] = True
+        # # Likewise, if I now believe a rock, previously good, is now bad, change that here
+        # elif not observation and next_state.rock_states[action.rock_no]:
+        #     next_state.rock_states[action.rock_no] = False
 
         # Normalize the observation
         if observation > 1:
@@ -426,7 +430,7 @@ class RockModel(Model):
             rock_no = self.get_cell_type(pos)
             if 0 <= rock_no < self.n_rocks:
                 # If the rock ACTUALLY is good, AND I currently believe it to be good, I get rewarded
-                if self.actual_rock_states[rock_no] and state.rock_states[rock_no]:
+                if state.rock_states[rock_no]:
                     # IMPORTANT - After sampling, the rock is marked as
                     # bad to show that it is has been dealt with
                     # "next states".rock_states[rock_no] is set to False in make_next_state
