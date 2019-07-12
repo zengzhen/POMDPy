@@ -182,7 +182,11 @@ class DiscreteActionMappingEntry(ActionMappingEntry):
                 self.is_legal = False
                 self.map.bin_sequence.remove(self.bin_number)
 
-
+    def __str__(self):
+        return ("action mapping entry: id="+str(self.bin_number)+
+               " visit_count="+str(self.visit_count)+
+               " total q="+str(self.total_q_value)+
+               " mean q="+str(self.mean_q_value))
 
 
 
