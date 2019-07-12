@@ -156,6 +156,9 @@ class Agent:
         # Monte-Carlo start state
         state = solver.belief_tree_index.sample_particle()
 
+        # NOTE: rock example specific
+        self.model.set_rock_states(state)
+
         reward = 0
         discounted_reward = 0
         discount = 1.0
@@ -166,6 +169,9 @@ class Agent:
 
             # action will be of type Discrete Action
             action = solver.select_eps_greedy_action(eps, start_time)
+
+            print("selected action : " + str(action.bin_number))
+            raw_input("Press Enter to continue...")
 
             # update epsilon
             if eps > self.model.epsilon_minimum:
@@ -183,6 +189,7 @@ class Agent:
             self.display_step_result(i, step_result)
 
             if not step_result.is_terminal or not is_legal:
+                # prune the tree and augment the child belief node to proceed with enough particles that match the current (a,o)
                 solver.update(step_result)
 
             # Extend the history sequence
