@@ -18,6 +18,8 @@ def ucb_action(mcts, current_node, greedy):
         # Skip illegal actions
         if not action_entry.is_legal:
             continue
+        if greedy:
+            print action_entry
 
         current_q = action_entry.mean_q_value
 

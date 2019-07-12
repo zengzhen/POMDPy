@@ -40,7 +40,7 @@ if __name__ == '__main__':
                         'node can have in MCTS')
     parser.add_argument('--max_depth', default=100, type=int, help='Max depth for a DFS of the belief search tree in '
                         'MCTS')
-    parser.add_argument('--action_selection_timeout', default=60, type=int, help='Max num of secs for action selection')
+    parser.add_argument('--action_selection_timeout', default=3600, type=int, help='Max num of secs for action selection')
 
     parser.set_defaults(preferred_actions=False)
     parser.set_defaults(use_tf=False)
