@@ -26,3 +26,17 @@ class HistoricalData(object):
         :return: HistoricalData
         """
 
+    @abc.abstractmethod
+    def update(self, other_data):
+        """
+        assign other_data to internal data
+        :param other_data:
+        """
+
+    @abc.abstractmethod
+    def generate_legal_actions(self):
+        """
+        :return: list of legal actions
+        """
+
+
