@@ -37,6 +37,7 @@ class BeliefTreeSolver(Solver):
             particle = self.model.sample_an_init_state()
             self.belief_tree.root.state_particles.append(particle)
 
+        # self.belief_tree_index: root BeliefNode
         self.belief_tree_index = self.belief_tree.root.copy()
 
     def monte_carlo_approx(self, eps, start_time):
@@ -151,6 +152,38 @@ class BeliefTreeSolver(Solver):
 
         return discounted_reward_sum
 
+    def rollout_from_state(self, state):
+        """
+        Iterative random rollout search to finish expanding the episode starting at belief_node
+        :param state: start state
+        :param legal_actions: legal actions
+        :return: discounted reward
+        """
+
+        legal_actions = self.model.get_legal_actions(state)
+
+        if not isinstance(legal_actions, list):
+            legal_actions = list(legal_actions)
+
+        is_terminal = False
+        discounted_reward_sum = 0.0
+        discount = 1.0
+        num_steps = 0
+
+        while num_steps < self.model.max_depth and not is_terminal:
+            legal_action = random.choice(legal_actions)
+            step_result, is_legal = self.model.generate_step(state, legal_action)
+            is_terminal = step_result.is_terminal
+            discounted_reward_sum += step_result.reward * discount
+            discount *= self.model.discount
+            # advance to next state
+            state = step_result.next_state
+            # generate new set of legal actions from the new state
+            legal_actions = self.model.get_legal_actions(state)
+            num_steps += 1
+
+        return discounted_reward_sum
+
     def update(self, step_result, prune=True):
         """
         Feed back the step result, updating the belief_tree,
@@ -173,6 +206,8 @@ class BeliefTreeSolver(Solver):
             if action_node is None:
                 # I grabbed a child belief node that doesn't have an action node. Use rollout from here on out.
                 console(2, module, "Reached branch with no leaf nodes, using random rollout to finish the episode")
+                print "Should not get here!"
+                exit()
                 self.disable_tree = True
                 return
 
@@ -182,6 +217,8 @@ class BeliefTreeSolver(Solver):
                 if entry.child_node is not None:
                     child_belief_node = entry.child_node
                     console(2, module, "Had to grab nearest belief node...variance added")
+                    print "if get here, we need to think about this case!"
+                    exit()
                     break
 
         # If the new root does not yet have the max possible number of particles add some more
@@ -196,6 +233,8 @@ class BeliefTreeSolver(Solver):
 
             # If that failed, attempt to create a new state particle set
             if child_belief_node.state_particles.__len__() == 0:
+                print "you will not believe this ever becoming zero!"
+                exit()
                 child_belief_node.state_particles += self.model.generate_particles_uninformed(self.belief_tree_index,
                                                                                               step_result.action,
                                                                                               step_result.observation,
@@ -204,6 +243,7 @@ class BeliefTreeSolver(Solver):
         # Failed to continue search- ran out of particles
         if child_belief_node is None or child_belief_node.state_particles.__len__() == 0:
             console(1, module, "Couldn't refill particles, must use random rollout to finish episode")
+            exit()
             self.disable_tree = True
             return
 

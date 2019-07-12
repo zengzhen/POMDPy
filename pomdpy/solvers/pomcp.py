@@ -103,21 +103,28 @@ class POMCP(BeliefTreeSolver):
 
         step_result, is_legal = self.model.generate_step(state, action)
 
+        # if belief_node->action_node child->belief_node child exists
+        # copy all the data from belief_node to the (a,o) child belief node
+        # print "simulate: action=", action.bin_number, " obs=", step_result.observation.is_good, "total visit=", belief_node.action_map.total_visit_count, "depth=", belief_node.depth
         child_belief_node = belief_node.child(action, step_result.observation)
-        if child_belief_node is None and not step_result.is_terminal and belief_node.action_map.total_visit_count > 0:
+
+
+        # grow the belief tree by constructing the new child_belief_node
+        if child_belief_node is None and not step_result.is_terminal and belief_node.visited:
             child_belief_node, added = belief_node.create_or_get_child(action, step_result.observation)
 
         if not step_result.is_terminal or not is_legal:
-            tree_depth += 1
             if child_belief_node is not None:
+                tree_depth += 1
                 # Add S' to the new belief node
                 # Add a state particle with the new state
                 if child_belief_node.state_particles.__len__() < self.model.max_particle_count:
                     child_belief_node.state_particles.append(step_result.next_state)
                 delayed_reward = self.traverse(child_belief_node, tree_depth, start_time)
             else:
-                delayed_reward = self.rollout(belief_node)
-            tree_depth -= 1
+                delayed_reward = self.rollout_from_state(state)
+                belief_node.visited = True
+                return delayed_reward
         else:
             console(4, module, "Reached terminal state.")
 
