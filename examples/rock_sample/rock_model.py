@@ -401,7 +401,7 @@ class RockModel(Model):
 
         if not correct:
             # Return the incorrect state if the sensors malfunctioned
-            observation = not observation
+            observation = observation
 
         # If I now believe that a rock, previously bad, is now good, change that here
         # if observation and not next_state.rock_states[action.rock_no]:

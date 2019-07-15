@@ -6,7 +6,7 @@ import abc
 from pomdpy.util import console
 from pomdpy.pomdp.belief_tree import BeliefTree
 from pomdpy.solvers import Solver
-
+import numpy as np
 module = "BeliefTreeSolver"
 
 
@@ -39,6 +39,16 @@ class BeliefTreeSolver(Solver):
 
         # self.belief_tree_index: root BeliefNode
         self.belief_tree_index = self.belief_tree.root.copy()
+
+    def show_current_belief(self):
+        rock_states_accumulate = [0.,0.,0.,0.,0.,0.,0.,0.]
+        length = 0
+        for particle in self.belief_tree_index.state_particles:
+            rock_states_accumulate  = np.add(rock_states_accumulate, particle.rock_states)
+            length += 1
+        rock_states_accumulate  = np.divide(rock_states_accumulate,[1,2,4,8,16,32,64,128])
+        rock_states_accumulate  = np.divide(rock_states_accumulate, length)
+        print(rock_states_accumulate)
 
     def monte_carlo_approx(self, eps, start_time):
         """

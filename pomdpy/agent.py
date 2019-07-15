@@ -191,6 +191,8 @@ class Agent:
             if not step_result.is_terminal or not is_legal:
                 # prune the tree and augment the child belief node to proceed with enough particles that match the current (a,o)
                 solver.update(step_result)
+            
+            solver.show_current_belief()
 
             # Extend the history sequence
             new_hist_entry = solver.history.add_entry()
