@@ -170,8 +170,8 @@ class Agent:
             # action will be of type Discrete Action
             action = solver.select_eps_greedy_action(eps, start_time)
 
-            print("selected action : " + str(action.bin_number))
-            raw_input("Press Enter to continue...")
+            # print("selected action : " + str(action.bin_number))
+            # raw_input("Press Enter to continue...")
 
             # update epsilon
             if eps > self.model.epsilon_minimum:
@@ -279,9 +279,13 @@ class Agent:
         :return:
         """
         console(3, module, 'Step Number = ' + str(step_num))
-        console(3, module, 'Step Result.Action = ' + step_result.action.to_string())
+        if(step_result.action.to_string() == 'CHECK'):
+            string = step_result.action.to_string() + ' rock ' + str(step_result.action.rock_no)
+        else:
+            string = step_result.action.to_string()
+        console(3, module,string)
         console(3, module, 'Step Result.Observation = ' + step_result.observation.to_string())
-        # console(3, module, 'Step Result.Next_State = ' + step_result.next_state.to_string())
+        console(3, module, 'Step Result.Next_State = ' + step_result.next_state.to_string())
         console(3, module, 'Step Result.Reward = ' + str(step_result.reward))
 
 

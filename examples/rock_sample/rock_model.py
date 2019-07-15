@@ -262,11 +262,12 @@ class RockModel(Model):
 
     def reset_for_epoch(self):
         self.actual_rock_states = self.sample_rocks()
-        print("reset rock states")
+        # print("reset rock states")
         # console(2, module, "Actual rock states = " + str(self.actual_rock_states))
 
     def set_rock_states(self, state):
         self.actual_rock_states = state.rock_states
+        console(2, module, "Actual rock states = " + str(self.actual_rock_states))
 
     def update(self, step_result):
         if step_result.action.bin_number == ActionType.SAMPLE:
