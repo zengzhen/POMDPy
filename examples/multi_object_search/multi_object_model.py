@@ -10,6 +10,7 @@ import logging
 import json
 import numpy as np
 from pomdpy.util import console, config_parser
+from multi_object_state import MultiObjectState
 from pomdpy.discrete_pomdp import DiscreteActionPool, DiscreteObservationPool
 from pomdpy.pomdp import Model, StepResult
 
@@ -109,33 +110,21 @@ class MultiObjectModel(Model):
 
     def get_legal_actions(self, state):
         legal_actions = []
-        all_actions = range(0, 5 + self.n_rocks)
-        new_pos = state.position.copy()
-        i = new_pos.i
-        j = new_pos.j
-
+        # Define all actions
+        # Unlike rocksample problem, we instead should add actions to the list instead of rejecting the illegal one,
+        # since we have infite number of legal_actions (for example, move along an edge, we can have infinite number of 
+        # edges).
+        all_actions = [1,2]
+        
+        # Function to define legal action
+        # We need following actions to be defined:
+        # Look(dir): look into a certain direction, dir can be taken from east, south, west and north
+        # Move(e, doi): Move along an edge in doi level of map
+        # Move(r): Move to a room in the semantic map
+        # Find(l,o_i): Claims that cell l contains object o_i
         for action in all_actions:
-            if action is ActionType.NORTH:
-                new_pos.i -= 1
-            elif action is ActionType.EAST:
-                new_pos.j += 1
-            elif action is ActionType.SOUTH:
-                new_pos.i += 1
-            elif action is ActionType.WEST:
-                new_pos.j -= 1
-
-            if not self.is_valid_pos(new_pos):
-                new_pos.i = i
-                new_pos.j = j
-                continue
-            else:
-                if action is ActionType.SAMPLE:
-                    rock_no = self.get_cell_type(new_pos)
-                    if 0 > rock_no or rock_no >= self.n_rocks:
-                        continue
-                new_pos.i = i
-                new_pos.j = j
-                legal_actions.append(action)
+            
+            legal_actions.append(action)
         return legal_actions
 
     def get_max_undiscounted_return(self):
@@ -205,24 +194,7 @@ class MultiObjectModel(Model):
     def make_next_position(self, pos, action_type):
         is_legal = True
 
-        if action_type >= ActionType.CHECK:
-            pass
-
-        elif action_type is ActionType.SAMPLE:
-            # if you took an illegal action and are in an invalid position
-            # sampling is not a legal action to take
-            if not self.is_valid_pos(pos):
-                is_legal = False
-            else:
-                rock_no = self.get_cell_type(pos)
-                if 0 > rock_no or rock_no >= self.n_rocks:
-                    is_legal = False
-        else:
-            old_position = pos.copy()
-            pos = self.make_adjacent_position(pos, action_type)
-            if not self.is_valid_pos(pos):
-                pos = old_position
-                is_legal = False
+        # Need to update the postion of robot according to the map or semantic map. 
         return pos, is_legal
 
     def make_next_state(self, state, action):
