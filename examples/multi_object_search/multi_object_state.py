@@ -10,32 +10,23 @@ class MultiObjectState(DiscreteState):
     The current room that the robot is current in. (Will be used by action move(r))
     The current robot position. Should be in metric value. 
     The scene graph.
-    The object position. (This may include the robot position)
+    The object position. (This may include the robot position, the robot position should also include the semantic postion
+    i.e. the room it is currently in.)
     """
 
-    def __init__(self, grid_position, rock_states):
-        if rock_states is not None:
-            assert rock_states.__len__() is not 0
-        self.position = grid_position
-        self.rock_states = rock_states  # list
+    def __init__(self, object_position, scene_graph):
+        self.position = object_position
+        self.scene_graph = scene_graph
 
     def distance_to(self, other_rock_state):
-        """
-        Distance is measured between beliefs by the sum of the num of different rocks
-        """
-        assert isinstance(other_rock_state, RockState)
-        distance = 0
-        # distance = self.position.manhattan_distance(other_rock_state.position)
-        for i, j in zip(self.rock_states, other_rock_state.rock_states):
-            if i != j:
-                distance += 1
-        return distance
+        # This function defines the difference between two different states, currently not useful
+        pass
 
     def __eq__(self, other_rock_state):
-        return self.position == other_rock_state.position and self.rock_states is other_rock_state.rock_states
+        return self.position == other_rock_state.position and self.scene_graph is other_rock_state.scene_graph
 
     def copy(self):
-        return RockState(self.position, self.rock_states)
+        return MultiObjectState(self.position, self.scene_graph)
 
     def __hash__(self):
         """
@@ -45,62 +36,18 @@ class MultiObjectState(DiscreteState):
         return int(self.to_string(), 2)
 
     def to_string(self):
-        state_string = self.position.to_string()
-        state_string += " - "
-
-        for i in self.rock_states:
-            if i:
-                state_string += "1 "
-            else:
-                state_string += "0 "
+        # Need to be designed to transfer the state to string
+        state_string = "Needed to be implemented"
         return state_string
 
     def print_state(self):
-        """
-        Pretty printing
-        :return:
-        """
-        self.position.print_position()
-
-        print('Good: {', end=' ')
-        good_rocks = []
-        bad_rocks = []
-        for i in range(0, self.rock_states.__len__()):
-            if self.rock_states[i]:
-                good_rocks.append(i)
-            else:
-                bad_rocks.append(i)
-        for j in good_rocks:
-            print(j, end=' ')
-        print('}; Bad: {', end=' ')
-        for k in bad_rocks:
-            print(k, end=' ')
-        print('}')
+        # Need to be designed to visualize the state
+        pass
 
     def as_list(self):
-        """
-        Returns a list containing the (i,j) grid position boolean values
-        representing the boolean rock states (good, bad)
-        :return:
-        """
-        state_list = [self.position.i, self.position.j]
-        for i in range(0, self.rock_states.__len__()):
-            if self.rock_states[i]:
-                state_list.append(True)
-            else:
-                state_list.append(False)
-        return state_list
+        # Seems to be currently useless for our model
+        pass
 
     def separate_rocks(self):
-        """
-        Used for the PyGame sim
-        :return:
-        """
-        good_rocks = []
-        bad_rocks = []
-        for i in range(0, self.rock_states.__len__()):
-            if self.rock_states[i]:
-                good_rocks.append(i)
-            else:
-                bad_rocks.append(i)
-        return good_rocks, bad_rocks
+        # Seems to be currently useless for our model
+        pass
