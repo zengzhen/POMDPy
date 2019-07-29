@@ -37,7 +37,7 @@ class MultiObjectState(DiscreteState):
 
     def to_string(self):
         # Need to be designed to transfer the state to string
-        state_string = "Needed to be implemented"
+        state_string = "Need to be implemented"
         return state_string
 
     def print_state(self):
