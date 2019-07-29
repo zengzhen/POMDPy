@@ -163,6 +163,8 @@ class Agent:
         discounted_reward = 0
         discount = 1.0
 
+        solver.show_current_belief()
+
         for i in range(self.model.max_steps):
 
             start_time = time.time()

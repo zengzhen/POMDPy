@@ -140,5 +140,11 @@ class POMCP(BeliefTreeSolver):
         action_mapping_entry.update_visit_count(1)
         action_mapping_entry.update_q_value(q_value)
 
+        #off_policy Q learning update
+        max_q_value = -np.inf
+        for action_entry in belief_node.action_map.entries.values():
+            if action_entry.mean_q_value > max_q_value:
+                max_q_value = action_entry.mean_q_value
+
         # Add RAVE ?
-        return q_value
+        return max_q_value
