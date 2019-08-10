@@ -124,7 +124,8 @@ class POMCP(BeliefTreeSolver):
             else:
                 delayed_reward = self.rollout_from_state(state)
                 belief_node.visited = True
-                return delayed_reward
+                total_reward = step_result.reward + (self.model.discount * delayed_reward)
+                return total_reward
         else:
             console(4, module, "Reached terminal state.")
 
